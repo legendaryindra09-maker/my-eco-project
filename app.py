@@ -1,29 +1,27 @@
 from flask import Flask, render_template, request, redirect
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
-# Данные о предстоящем ивенте (можешь менять здесь)
 EVENT_INFO = {
-    "title": "Большая уборка берега",
+    "title": "Эко-десант: Очистка парка",
     "date": "2026-05-20 10:00:00",
-    "location": "Центральный парк, вход со стороны реки",
-    "description": "Очищаем зону отдыха от пластика и мусора. Инвентарь выдаем!"
+    "location": "Центральный парк, главный вход",
+    "description": "Собираемся, чтобы очистить зону отдыха. Инвентарь выдаем!"
 }
 
 volunteers = []
 
 @app.route('/')
 def index():
-    # Считаем время до ивента
-    event_date = datetime.strptime(EVENT_INFO['date'], "%2026-%m-%d %H:%M:%S")
     return render_template('index.html', event=EVENT_INFO)
 
 @app.route('/register', methods=['POST'])
 def register():
     name = request.form.get('name')
     phone = request.form.get('phone')
-    email = request.form.get('email') # Это поле для мотивации
+    email = request.form.get('email')
     
     if name and phone and email:
         volunteers.append({
@@ -32,12 +30,13 @@ def register():
             "message": email,
             "time": datetime.now().strftime("%H:%M")
         })
-        return render_template('success.html')
-    return "Пожалуйста, заполни все поля! <a href='/'>Назад</a>", 400
+        return redirect('/admin')
+    return "Заполни все поля!", 400
 
 @app.route('/admin')
 def admin():
     return render_template('admin.html', volunteers=volunteers)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
