@@ -1,29 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Список участников</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>Админ-панель</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #2d6a4f; color: white; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
+        tr:hover { background: #f9fffb; }
+        .empty { text-align: center; padding: 40px; color: #888; }
+        .back-btn { text-decoration: none; color: #2d6a4f; font-weight: bold; }
+    </style>
 </head>
-<body class="container mt-5">
-    <h2>Зарегистрированные волонтеры</h2>
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Имя</th>
-                <th>Email</th>
-                <th>Телефон</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for p in participants %}
-            <tr>
-                <td>{{ p.name }}</td>
-                <td>{{ p.email }}</td>
-                <td>{{ p.phone }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+<body>
+    <div class="header">
+        <h2>Список участников ({{ volunteers|length }})</h2>
+        <a href="/" class="back-btn">← На сайт</a>
+    </div>
+
+    {% if volunteers %}
+    <table>
+        <tr>
+            <th>Имя</th>
+            <th>Телефон</th>
+            <th>Мотивация</th>
+            <th>Время</th>
+        </tr>
+        {% for v in volunteers %}
+        <tr>
+            <td><strong>{{ v.name }}</strong></td>
+            <td>{{ v.phone }}</td>
+            <td>{{ v.message }}</td>
+            <td>{{ v.time }}</td>
+        </tr>
+        {% endfor %}
     </table>
-    <a href="/" class="btn btn-primary">На главную</a>
+    {% else %}
+    <div class="table">
+        <p class="empty">Участников пока нет. Будь первым!</p>
+    </div>
+    {% endif %}
 </body>
 </html>
