@@ -3,72 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoVolunteer — Глобальный сбор</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>EcoVolunteer — Твой шаг к чистой планете</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #2d6a4f; --accent: #74c69d; --bg: #f8fbf9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; text-align: center; color: #1b4332; }
-        header { background: linear-gradient(135deg, #1b4332, var(--primary)); color: white; padding: 60px 20px; clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); }
-        .timer-box { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
-        .timer-item { background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; min-width: 70px; }
-        .timer-item span { display: block; font-size: 1.8rem; font-weight: bold; }
-        .container { max-width: 500px; margin: -40px auto 50px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .info-card { background: #e9f5ee; padding: 15px; border-radius: 15px; margin-bottom: 25px; text-align: left; border-left: 5px solid var(--primary); }
-        .form-group { margin-bottom: 15px; text-align: left; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
-        input, textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        input:focus { border-color: var(--accent); outline: none; }
-        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 1.1rem; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #1b4332; transform: translateY(-2px); }
+        :root { --primary: #10b981; --dark: #065f46; --bg: #f3f4f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
+        header { background: linear-gradient(135deg, var(--dark), var(--primary)); color: white; padding: 60px 20px; text-align: center; clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%); }
+        .container { max-width: 450px; margin: -30px auto 50px; background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); position: relative; }
+        input, textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
+        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-size: 1.1rem; font-weight: bold; transition: 0.3s; }
+        button:hover { background: var(--dark); transform: translateY(-2px); }
+        .flash { background: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+        .divider { text-align: center; margin: 30px 0; color: #9ca3af; position: relative; }
+        .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #e5e7eb; }
+        .divider::before { left: 0; } .divider::after { right: 0; }
+        .login-btn { background: white; color: var(--dark); border: 2px solid var(--dark); }
+        .login-btn:hover { background: var(--dark); color: white; }
     </style>
 </head>
 <body>
     <header>
         <h1>{{ event.title }}</h1>
-        <p><i class="fas fa-map-marker-alt"></i> {{ event.location }}</p>
-        <div class="timer-box">
-            <div class="timer-item"><span id="days">0</span>дн</div>
-            <div class="timer-item"><span id="hours">0</span>час</div>
-            <div class="timer-item"><span id="mins">0</span>мин</div>
-        </div>
+        <p><i class="fas fa-map-pin"></i> {{ event.location }}</p>
     </header>
 
     <div class="container">
-        <div class="info-card">
-            <h3 style="margin-top:0">О мероприятии:</h3>
-            <p>{{ event.description }}</p>
-        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
         <form action="/register" method="POST">
-            <div class="form-group">
-                <label>Ваше имя</label>
-                <input type="text" name="name" placeholder="Иван" required>
-            </div>
-            <div class="form-group">
-                <label>Телефон</label>
-                <input type="tel" name="phone" placeholder="+998..." required>
-            </div>
-            <div class="form-group">
-                <label>Почему вы с нами?</label>
-                <textarea name="email" placeholder="Напишите кратко..." rows="3" required></textarea>
-            </div>
-            <button type="submit">Присоединиться</button>
+            <h3 style="text-align:center; color: #111827;">Присоединиться к команде</h3>
+            <input type="text" name="name" placeholder="👤 Как тебя зовут?" required>
+            <input type="tel" name="phone" placeholder="📱 Телефон (+998...)" required>
+            <textarea name="email" placeholder="💬 Почему хочешь помочь?" rows="2"></textarea>
+            <button type="submit">Создать аккаунт</button>
+        </form>
+
+        <div class="divider">ИЛИ</div>
+
+        <form action="/login" method="POST">
+            <h3 style="text-align:center; color: #111827;">Уже с нами?</h3>
+            <input type="tel" name="login_phone" placeholder="📱 Введи свой телефон" required>
+            <button type="submit" class="login-btn">Войти в профиль</button>
         </form>
     </div>
-
-    <script>
-        const targetDate = new Date("{{ event.date }}").getTime();
-        function updateTimer() {
-            const now = new Date().getTime();
-            const diff = targetDate - now;
-            if (diff > 0) {
-                document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-                document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                document.getElementById('mins').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            }
-        }
-        setInterval(updateTimer, 1000);
-        updateTimer();
-    </script>
 </body>
 </html>
