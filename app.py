@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-app.secret_key = 'super_eco_secret_key_123'
+app.secret_key = os.environ.get('SECRET_KEY', 'any-very-long-string-123')
 
 # Умное подключение: если есть облачная база - берем ее, если нет - создаем локальную
 db_url = os.environ.get('DATABASE_URL', 'sqlite:///volunteers.db')
