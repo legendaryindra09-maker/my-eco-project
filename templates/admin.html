@@ -2,45 +2,52 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Админ-панель</title>
+    <title>Админка - Центр управления</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 30px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #2d6a4f; color: white; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
-        tr:hover { background: #f9fffb; }
-        .empty { text-align: center; padding: 40px; color: #888; }
-        .back-btn { text-decoration: none; color: #2d6a4f; font-weight: bold; }
+        body { font-family: sans-serif; padding: 20px; background: #f3f4f6; }
+        .header { display: flex; justify-content: space-between; background: #10b981; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #065f46; color: white; }
+        .blocked { background: #fee2e2; color: #991b1b; }
+        .btn { padding: 8px 12px; text-decoration: none; border-radius: 6px; color: white; font-size: 13px; font-weight: bold; margin-right: 5px; }
+        .btn-green { background: #10b981; } .btn-red { background: #ef4444; } .btn-gray { background: #6b7280; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h2>Список участников ({{ volunteers|length }})</h2>
-        <a href="/" class="back-btn">← На сайт</a>
+        <h2 style="margin:0;">Секретная Панель</h2>
+        <h2 style="margin:0;">Всего в команде: {{ volunteers|length }}</h2>
     </div>
-
-    {% if volunteers %}
+    
     <table>
         <tr>
             <th>Имя</th>
             <th>Телефон</th>
             <th>Мотивация</th>
-            <th>Время</th>
+            <th>Баллы</th>
+            <th>Начислить</th>
+            <th>Статус</th>
         </tr>
         {% for v in volunteers %}
-        <tr>
+        <tr class="{% if v.is_blocked %}blocked{% endif %}">
             <td><strong>{{ v.name }}</strong></td>
             <td>{{ v.phone }}</td>
-            <td>{{ v.message }}</td>
-            <td>{{ v.time }}</td>
+            <td>{{ v.motivation }}</td>
+            <td style="font-size: 1.2rem;">⭐ {{ v.points }}</td>
+            <td>
+                <a href="/admin/points/{{ v.id }}/10?key=admin123" class="btn btn-green">+10</a>
+                <a href="/admin/points/{{ v.id }}/50?key=admin123" class="btn btn-green">+50</a>
+            </td>
+            <td>
+                {% if v.is_blocked %}
+                    <a href="/admin/block/{{ v.id }}?key=admin123" class="btn btn-gray">Разбанить</a>
+                {% else %}
+                    <a href="/admin/block/{{ v.id }}?key=admin123" class="btn btn-red">Забанить</a>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>
-    {% else %}
-    <div class="table">
-        <p class="empty">Участников пока нет. Будь первым!</p>
-    </div>
-    {% endif %}
 </body>
 </html>
