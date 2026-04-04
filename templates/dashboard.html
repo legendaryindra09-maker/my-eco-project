@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Профиль - EcoVolunteer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #10b981; --bg: #f3f4f6; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .card { background: white; border-radius: 20px; padding: 25px; margin: 0 auto 25px; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .profile-header { display: flex; align-items: center; gap: 20px; }
+        .avatar { width: 80px; height: 80px; border-radius: 50%; background: #e5e7eb; }
+        .points-badge { background: #fef3c7; color: #d97706; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 1.2rem; display: inline-block; margin-top: 10px; }
+        .leaderboard { background: #f8fafc; border-radius: 15px; padding: 15px; margin-top: 20px; }
+        .leader-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        .leader-item:last-child { border: none; }
+        .article-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 15px; }
+        .btn-exit { color: #ef4444; text-decoration: none; font-weight: bold; display: block; text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card profile-header">
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ user.name }}" alt="Avatar" class="avatar">
+        <div>
+            <h2 style="margin: 0; color: #111827;">Привет, {{ user.name }}!</h2>
+            <div class="points-badge"><i class="fas fa-star"></i> {{ user.points }} эко-баллов</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0;">🏆 Топ-5 волонтеров</h3>
+        <div class="leaderboard">
+            {% for v in top_volunteers %}
+            <div class="leader-item">
+                <span><strong>{{ loop.index }}.</strong> {{ v.name }}</span>
+                <span style="color: #d97706; font-weight: bold;">{{ v.points }} ⭐</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <h2 style="text-align: center; max-width: 600px; margin: 30px auto 15px;">Эко-база знаний</h2>
+
+    <div class="card">
+        <img src="https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=800&q=80" alt="Пластик" class="article-img">
+        <h3>Почему важна каждая бутылка?</h3>
+        <p>Пластиковая бутылка разлагается 450 лет. Собирая мусор сегодня, мы спасаем экологию для 15 будущих поколений. Океаны уже задыхаются от пластика, но всё начинается с наших улиц и парков.</p>
+    </div>
+
+    <div class="card">
+        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" alt="Деревья" class="article-img">
+        <h3>Легкие нашего города</h3>
+        <p>Взрослое дерево за один сезон поглощает до 20 кг углекислого газа. Участвуя в наших акциях по озеленению, вы буквально дарите городу чистый воздух.</p>
+    </div>
+
+    <a href="/logout" class="btn-exit"><i class="fas fa-sign-out-alt"></i> Выйти из аккаунта</a>
+</body>
+</html>
