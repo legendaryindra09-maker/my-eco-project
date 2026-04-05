@@ -23,7 +23,11 @@ class Volunteer(db.Model):
     points = db.Column(db.Integer, default=10)
     is_blocked = db.Column(db.Boolean, default=False)
     time_joined = db.Column(db.String(20))
-
+class Article(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    date_added = db.Column(db.String(20), default=lambda: datetime.now().strftime("%d.%m.%Y"))
 with app.app_context():
     db.create_all()
 
@@ -38,7 +42,18 @@ EVENT_INFO = {
 def index():
     if 'user_id' in session:
         return redirect(url_for('dashboard'))
-    return render_template('index.html', event=EVENT_INFO)
+    
+    articles = Article.query.all()
+    if not articles:
+        first = Article(
+            title="Чинары Ферганы: наше наследие",
+            content="Чинары дарят нам прохладу и чистый воздух. Давайте беречь природу нашего города!"
+        )
+        db.session.add(first)
+        db.session.commit()
+        articles = [first]
+    
+    return render_template('index.html', event=EVENT_INFO, articles=articles)
 
 @app.route('/register', methods=['POST'])
 def register():
