@@ -22,7 +22,7 @@ class Volunteer(db.Model):
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), unique=True, nullable=False)
     motivation = db.Column(db.String(500))
-    points = db.Column(db.Integer, default=10) # Начальные баллы за регистрацию
+    points = db.Column(db.Integer, default=10)
     is_blocked = db.Column(db.Boolean, default=False)
     time_joined = db.Column(db.String(20), default=lambda: datetime.now().strftime("%d.%m.%Y"))
 
@@ -46,7 +46,6 @@ EVENT_INFO = {
     "goal": "Собрать 2 тонны пластика"
 }
 
-# Создание таблиц
 with app.app_context():
     db.create_all()
 
@@ -55,7 +54,6 @@ with app.app_context():
 @app.route('/')
 def index():
     articles = Article.query.order_by(Article.id.desc()).all()
-    # Авто-создание статьи, если пусто
     if not articles:
         new_art = Article(title="Старт проекта", content="Мы начинаем масштабную очистку Узбекистана!")
         db.session.add(new_art)
@@ -73,32 +71,50 @@ def register():
         flash('Пожалуйста, укажите имя и телефон!', 'error')
         return redirect(url_for('index'))
 
+    # ПРОВЕРКА: Если пользователь уже есть, просто входим
     existing = Volunteer.query.filter_by(phone=phone).first()
     if existing:
-        flash('Этот номер уже зарегистрирован!', 'warning')
-        return redirect(url_for('index'))
+        session['user_id'] = existing.id
+        flash(f'С возвращением, {existing.name}!', 'success')
+        return redirect(url_for('dashboard'))
 
+    # Если пользователя нет — создаем нового
     new_v = Volunteer(name=name, phone=phone, motivation=motivation)
-    db.session.add(new_v)
-    db.session.commit()
-    
-    session['user_id'] = new_v.id
-    flash(f'Добро пожаловать в команду, {name}!', 'success')
-    return redirect(url_for('dashboard'))
+    try:
+        db.session.add(new_v)
+        db.session.commit()
+        session['user_id'] = new_v.id
+        flash(f'Добро пожаловать в команду, {name}!', 'success')
+        return redirect(url_for('dashboard'))
+    except Exception as e:
+        db.session.rollback()
+        flash('Ошибка при регистрации. Возможно, номер уже занят.', 'danger')
+        return redirect(url_for('index'))
 
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
+        flash('Сначала войдите в систему!', 'warning')
         return redirect(url_for('index'))
+    
     user = Volunteer.query.get(session['user_id'])
-    return f"<h1>Личный кабинет {user.name}</h1><p>Твой статус: {user.get_rank()}</p><a href='/'>На главную</a>"
+    if not user:
+        return redirect(url_for('index'))
+        
+    return render_template('dashboard.html', user=user)
 
 @app.route('/admin')
 def admin_panel():
-    # В будущем здесь нужна проверка пароля!
     volunteers = Volunteer.query.all()
     total_points = sum(v.points for v in volunteers)
     return render_template('admin.html', volunteers=volunteers, total_points=total_points)
+
+# Выход из аккаунта
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    flash('Вы вышли из системы.', 'info')
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
