@@ -91,12 +91,18 @@ def register():
     return redirect(url_for('dashboard'))
 
 @app.route('/dashboard')
+@app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('index'))
+    
     user = Volunteer.query.get(session['user_id'])
-    return render_template('dashboard.html', user=user)
-
+    
+    # Добавляем эту строку — она берет топ-5 лидеров по баллам
+    leaders = Volunteer.query.order_by(Volunteer.points.desc()).limit(5).all()
+    
+    # В этой строке мы добавляем leaders=leaders в самый конец
+    return render_template('dashboard.html', user=user, leaders=leaders)
 @app.route('/admin')
 @requires_auth
 def admin_panel():
