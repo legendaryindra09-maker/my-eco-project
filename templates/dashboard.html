@@ -1,32 +1,49 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Твой Профиль | ECO-UZB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;800&display=swap" rel="stylesheet">
-    <style>
-        body { background: #050505; color: white; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .profile-card { background: rgba(255,255,255,0.05); padding: 40px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); text-align: center; width: 90%; max-width: 400px; backdrop-filter: blur(20px); }
-        .avatar { width: 100px; height: 100px; background: linear-gradient(45deg, #00f2fe, #4facfe); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: black; font-weight: 800; }
-        .rank-badge { background: #00f2fe; color: black; padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
-        h2 { margin: 10px 0; }
-        .stats { display: flex; justify-content: space-around; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
-        .btn-back { display: inline-block; margin-top: 30px; color: #666; text-decoration: none; font-size: 14px; }
-    </style>
-</head>
-<body>
-    <div class="profile-card">
-        <div class="avatar">{{ user.name[0] }}</div>
-        <span class="rank-badge">{{ user.get_rank() }}</span>
-        <h2>{{ user.name }}</h2>
-        <p style="color: #888;">Рады, что ты с нами!</p>
-        
-        <div class="stats">
-            <div><div style="color: #00f2fe; font-weight: 800;">{{ user.points }}</div><small>Баллов</small></div>
-            <div><div style="color: #00f2fe; font-weight: 800;">1</div><small>Акция</small></div>
-        </div>
+<div class="knowledge-hub" style="text-align: left; margin-top: 30px;">
+    
+    <h3 style="color: var(--primary); border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">
+        <i class="fa-solid fa-earth-americas"></i> Глобальные вызовы человечества
+    </h3>
 
-        <a href="/" class="btn-back">← Вернуться на главную</a>
+    <div class="info-section" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+        <b style="color: #00f2fe; font-size: 16px;">🚮 Загрязнение почвы и мусорный кризис</b>
+        <p style="font-size: 13px; color: #ccc; line-height: 1.5;">
+            Почва — это живой фильтр планеты. Когда мы выбрасываем батарейки или пластик, тяжелые металлы (свинец, ртуть) проникают в землю, а затем в грунтовые воды. 
+            <b>Почему это опасно?</b> Растения впитывают яды, которые потом попадают в пищу человеку. Один окурок от сигареты отравляет до 1000 литров воды.
+        </p>
     </div>
-</body>
-</html>
+
+    <div class="info-section" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+        <b style="color: #4facfe; font-size: 16px;">🌊 Гибель водной экосистемы</b>
+        <p style="font-size: 13px; color: #ccc; line-height: 1.5;">
+            90% морских птиц имеют пластик в желудке. Основная проблема — <b>микропластик</b>. Это крошечные частицы, которые не видны глазу. Рыбы едят их, принимая за планктон. 
+            <b>Данные:</b> К 2050 году вес пластика в океане может превысить вес всей рыбы на планете.
+        </p>
+    </div>
+
+    <div class="info-section" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+        <b style="color: #fff; font-size: 16px;">☁️ Загрязнение воздуха</b>
+        <p style="font-size: 13px; color: #ccc; line-height: 1.5;">
+            Промышленные газы и выхлопы авто создают <b>смог</b>. В городах Узбекистана в зимний период часто повышается уровень частиц PM2.5 (мелкая пыль), которые попадают напрямую в кровь через легкие. Это вызывает аллергии и заболевания сердца.
+        </p>
+    </div>
+
+    <div class="info-section" style="background: rgba(0, 242, 254, 0.05); padding: 20px; border-radius: 20px; border: 1px solid var(--primary);">
+        <b style="color: var(--primary); font-size: 16px;">🌍 Мировые анти-рекорды:</b>
+        <ul style="font-size: 13px; color: #eee; padding-left: 20px;">
+            <li><b>Китай и Индия:</b> Лидеры по выбросам в атмосферу из-за угольных станций.</li>
+            <li><b>США:</b> Производят больше всего упаковочного мусора на человека.</li>
+            <li><b>Острова мусора:</b> В Тихом океане плавает "Большое мусорное пятно" площадью как три Франции.</li>
+        </ul>
+    </div>
+
+    <div style="margin-top: 30px; padding: 15px; border-left: 3px solid var(--primary);">
+        <h4 style="margin: 0 0 10px; color: var(--primary);">🛡️ Стратегия 5R для волонтера:</h4>
+        <p style="font-size: 13px; color: #aaa;">
+            1. <b>Refuse</b> (Откажись от ненужного)<br>
+            2. <b>Reduce</b> (Потребляй меньше)<br>
+            3. <b>Reuse</b> (Используй повторно)<br>
+            4. <b>Recycle</b> (Сдавай на переработку)<br>
+            5. <b>Rot</b> (Компостируй органику)
+        </p>
+    </div>
+</div>
