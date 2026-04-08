@@ -64,11 +64,18 @@ with app.app_context():
 
 @app.route('/')
 def index():
+    # Мы создаем этот словарь, чтобы HTML-файл не ругался на отсутствие 'event'
+    event_data = {"title": "Чистая Фергана"}
+    
     if 'user_id' in session:
         user = Volunteer.query.get(session['user_id'])
+        # Загружаем статьи для "главной для своих"
         articles = Article.query.order_by(Article.id.desc()).all()
-        return render_template('home_member.html', user=user, articles=articles)
-    return render_template('index.html')
+        return render_template('home_member.html', user=user, articles=articles, event=event_data)
+    
+    # Для тех, кто не вошел, показываем обычную страницу с регистрацией
+    return render_template('index.html', event=event_data)
+
 
 @app.route('/register', methods=['POST'])
 def register():
