@@ -58,6 +58,7 @@ def requires_auth(f):
     return decorated
 
 with app.app_context():
+    db.drop_all()
     db.create_all()
 
 # --- МАРШРУТЫ ---
