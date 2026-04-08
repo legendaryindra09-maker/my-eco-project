@@ -2,52 +2,41 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Админка - Центр управления</title>
+    <title>Админ-панель | ECO-UZB</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f3f4f6; }
-        .header { display: flex; justify-content: space-between; background: #10b981; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        th { background: #065f46; color: white; }
-        .blocked { background: #fee2e2; color: #991b1b; }
-        .btn { padding: 8px 12px; text-decoration: none; border-radius: 6px; color: white; font-size: 13px; font-weight: bold; margin-right: 5px; }
-        .btn-green { background: #10b981; } .btn-red { background: #ef4444; } .btn-gray { background: #6b7280; }
+        body { background: #0a0a0a; color: #eee; font-family: sans-serif; padding: 40px; }
+        table { width: 100%; border-collapse: collapse; background: #161616; border-radius: 15px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #222; }
+        th { background: #00f2fe; color: black; text-transform: uppercase; font-size: 12px; }
+        .points-pill { background: #333; padding: 3px 10px; border-radius: 10px; color: #00f2fe; }
+        h1 { color: #00f2fe; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2 style="margin:0;">Секретная Панель</h2>
-        <h2 style="margin:0;">Всего в команде: {{ volunteers|length }}</h2>
-    </div>
+    <h1>Управление волонтерами</h1>
+    <p>Всего баллов в системе: <strong>{{ total_points }}</strong></p>
     
     <table>
-        <tr>
-            <th>Имя</th>
-            <th>Телефон</th>
-            <th>Мотивация</th>
-            <th>Баллы</th>
-            <th>Начислить</th>
-            <th>Статус</th>
-        </tr>
-        {% for v in volunteers %}
-        <tr class="{% if v.is_blocked %}blocked{% endif %}">
-            <td><strong>{{ v.name }}</strong></td>
-            <td>{{ v.phone }}</td>
-            <td>{{ v.motivation }}</td>
-            <td style="font-size: 1.2rem;">⭐ {{ v.points }}</td>
-            <td>
-                <a href="/admin/points/{{ v.id }}/10?key=admin123" class="btn btn-green">+10</a>
-                <a href="/admin/points/{{ v.id }}/50?key=admin123" class="btn btn-green">+50</a>
-            </td>
-            <td>
-                {% if v.is_blocked %}
-                    <a href="/admin/block/{{ v.id }}?key=admin123" class="btn btn-gray">Разбанить</a>
-                {% else %}
-                    <a href="/admin/block/{{ v.id }}?key=admin123" class="btn btn-red">Забанить</a>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>Имя</th>
+                <th>Телефон</th>
+                <th>Ранг</th>
+                <th>Баллы</th>
+                <th>Дата</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in volunteers %}
+            <tr>
+                <td>{{ v.name }}</td>
+                <td>{{ v.phone }}</td>
+                <td>{{ v.get_rank() }}</td>
+                <td><span class="points-pill">{{ v.points }}</span></td>
+                <td>{{ v.time_joined }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </body>
 </html>
