@@ -3,66 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoVolunteer — Твой шаг к чистой планете</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Чистый Узбекистан | {{ event.title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #10b981; --dark: #065f46; --bg: #f3f4f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
-        header { background: linear-gradient(135deg, var(--dark), var(--primary)); color: white; padding: 60px 20px; text-align: center; clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%); }
-        .container { max-width: 450px; margin: -30px auto 50px; background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); position: relative; }
-        input, textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
-        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-size: 1.1rem; font-weight: bold; transition: 0.3s; }
-        button:hover { background: var(--dark); transform: translateY(-2px); }
-        .flash { background: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; }
-        .divider { text-align: center; margin: 30px 0; color: #9ca3af; position: relative; }
-        .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #e5e7eb; }
-        .divider::before { left: 0; } .divider::after { right: 0; }
-        .login-btn { background: white; color: var(--dark); border: 2px solid var(--dark); }
-        .login-btn:hover { background: var(--dark); color: white; }
+        :root {
+            --accent: #00d2ff;
+            --bg: #0a0a0a;
+            --card-bg: #161616;
+            --text: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            scroll-behavior: smooth;
+        }
+
+        /* Навигация */
+        nav {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 25px;
+            z-index: 10;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        nav a:hover { color: var(--accent); }
+
+        /* Главный экран */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: clamp(40px, 8vw, 90px);
+            font-weight: 900;
+            margin: 0;
+            line-height: 0.9;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 18px;
+            color: #ccc;
+            max-width: 600px;
+            margin: 20px 0 40px;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+            padding: 18px 45px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.4s;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 210, 255, 0.5);
+        }
+
+        /* Контентная часть */
+        .section-container {
+            max-width: 1100px;
+            margin: -100px auto 100px;
+            position: relative;
+            z-index: 5;
+            padding: 0 20px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .form-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: var(--accent);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 10px;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        /* Блог */
+        .blog-section {
+            padding: 100px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .article-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .article-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border-bottom: 4px solid var(--accent);
+            transition: 0.3s;
+        }
+
+        .article-card:hover { transform: translateY(-10px); }
+
+        .article-card h3 { color: var(--accent); margin-top: 0; }
+        
+        .footer {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
+
+    <nav>
+        <a href="/">Главная</a>
+        <a href="#register">Участвовать</a>
+        <a href="#blog">Эко-блог</a>
+        <a href="/admin">Войти</a>
+    </nav>
+
     <header>
+        <div style="font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 10px; letter-spacing: 4px; text-transform: uppercase;">Начни с Ферганы</div>
         <h1>{{ event.title }}</h1>
-        <p><i class="fas fa-map-pin"></i> {{ event.location }}</p>
+        <p class="hero-desc">Наша миссия — очистить нашу страну от мусора и сохранить природу для будущего. Мы верим, что вместе мы сможем сделать Узбекистан самым чистым местом на планете.</p>
+        <a href="#register" class="btn-primary">Присоединиться</a>
     </header>
 
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form action="/register" method="POST">
-            <h3 style="text-align:center; color: #111827;">Присоединиться к команде</h3>
-            <input type="text" name="name" placeholder="👤 Как тебя зовут?" required>
-            <input type="tel" name="phone" placeholder="📱 Телефон (+998...)" required>
-            <textarea name="email" placeholder="💬 Почему хочешь помочь?" rows="2"></textarea>
-            <button type="submit">Создать аккаунт</button>
-        </form>
-
-        <div class="divider">ИЛИ</div>
-
-        <form action="/login" method="POST">
-            <h3 style="text-align:center; color: #111827;">Уже с нами?</h3>
-            <input type="tel" name="login_phone" placeholder="📱 Введи свой телефон" required>
-            <button type="submit" class="login-btn">Войти в профиль</button>
-        </form>
+    <div class="section-container" id="register">
+        <div class="info-card">
+            <h2 class="form-title">Регистрация волонтера</h2>
+            <form action="/register" method="POST">
+                <input type="text" name="name" placeholder="Ваше имя" required>
+                <input type="tel" name="phone" placeholder="Ваш телефон (99 123 45 67)" required>
+                <textarea name="motivation" placeholder="Почему вы хотите помочь?" rows="3"></textarea>
+                <button type="submit" class="btn-primary" style="width: 100%;">Отправить заявку</button>
+            </form>
+        </div>
     </div>
-    <hr style="margin: 40px 0; border: 0; border-top: 1px solid #eee;">
-<div style="max-width: 450px; margin: 0 auto; padding: 0 20px;">
-    <h2 style="text-align: center; color: #065f46;">Эко-блог</h2>
-    {% for article in articles %}
-    <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
-        <h3 style="color: #10b981; margin: 0 0 10px 0;">{{ article.title }}</h3>
-        <p style="color: #444; font-size: 14px;">{{ article.content }}</p>
-        <small style="color: #bbb;">{{ article.date_added }}</small>
+
+    <section class="blog-section" id="blog">
+        <h2 style="font-size: 40px; text-align: center;">Последние новости</h2>
+        <div class="article-grid">
+            {% for article in articles %}
+            <div class="article-card">
+                <h3>{{ article.title }}</h3>
+                <p style="color: #aaa; line-height: 1.6;">{{ article.content }}</p>
+                <div style="margin-top: 20px; font-size: 12px; color: #666;">{{ article.date_added }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <div class="footer">
+        &copy; 2026 Проект «Чистый Узбекистан». Создано с заботой о природе.
     </div>
-    {% endfor %}
-</div>
+
 </body>
 </html>
