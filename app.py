@@ -1,10 +1,15 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, Response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'ultra_secret_key_for_eco_project'
+
+# --- НАСТРОЙКИ ДОСТУПА В АДМИНКУ ---
+ADMIN_USERNAME = 'admin'
+ADMIN_PASSWORD = 'ТВОЙ_ПАРОЛЬ_ЗДЕСЬ' # <--- ИЗМЕНИ ЭТО!
 
 # Настройка базы данных
 db_url = os.getenv("DATABASE_URL")
@@ -23,7 +28,6 @@ class Volunteer(db.Model):
     phone = db.Column(db.String(20), unique=True, nullable=False)
     motivation = db.Column(db.String(500))
     points = db.Column(db.Integer, default=10)
-    is_blocked = db.Column(db.Boolean, default=False)
     time_joined = db.Column(db.String(20), default=lambda: datetime.now().strftime("%d.%m.%Y"))
 
     def get_rank(self):
@@ -37,14 +41,22 @@ class Article(db.Model):
     content = db.Column(db.Text, nullable=False)
     date_added = db.Column(db.String(20), default=lambda: datetime.now().strftime("%d.%m.%Y"))
 
-# --- ИНФОРМАЦИЯ О ПРОЕКТЕ ---
+# --- ЗАЩИТА АДМИНКИ ---
 
-EVENT_INFO = {
-    "title": "Чистый Ферганский Парк",
-    "date": "20 мая 2026",
-    "location": "Центральный парк, Фергана",
-    "goal": "Собрать 2 тонны пластика"
-}
+def check_auth(username, password):
+    return username == ADMIN_USERNAME and password == ADMIN_PASSWORD
+
+def authenticate():
+    return Response('Нужна авторизация', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
 
 with app.app_context():
     db.create_all()
@@ -54,12 +66,8 @@ with app.app_context():
 @app.route('/')
 def index():
     articles = Article.query.order_by(Article.id.desc()).all()
-    if not articles:
-        new_art = Article(title="Старт проекта", content="Мы начинаем масштабную очистку Узбекистана!")
-        db.session.add(new_art)
-        db.session.commit()
-        articles = [new_art]
-    return render_template('index.html', event=EVENT_INFO, articles=articles)
+    event = {"title": "Чистый Ферганский Парк"}
+    return render_template('index.html', event=event, articles=articles)
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -68,64 +76,44 @@ def register():
     motivation = request.form.get('motivation')
 
     if not name or not phone:
-        flash('Пожалуйста, укажите имя и телефон!', 'error')
+        flash('Укажите имя и телефон!', 'error')
         return redirect(url_for('index'))
 
-    # ПРОВЕРКА: Если пользователь уже есть, просто входим
     existing = Volunteer.query.filter_by(phone=phone).first()
     if existing:
         session['user_id'] = existing.id
-        flash(f'С возвращением, {existing.name}!', 'success')
         return redirect(url_for('dashboard'))
 
-    # Если пользователя нет — создаем нового
     new_v = Volunteer(name=name, phone=phone, motivation=motivation)
-    try:
-        db.session.add(new_v)
-        db.session.commit()
-        session['user_id'] = new_v.id
-        flash(f'Добро пожаловать в команду, {name}!', 'success')
-        return redirect(url_for('dashboard'))
-    except Exception as e:
-        db.session.rollback()
-        flash('Ошибка при регистрации. Возможно, номер уже занят.', 'danger')
-        return redirect(url_for('index'))
+    db.session.add(new_v)
+    db.session.commit()
+    session['user_id'] = new_v.id
+    return redirect(url_for('dashboard'))
 
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
-        flash('Сначала войдите в систему!', 'warning')
         return redirect(url_for('index'))
-    
     user = Volunteer.query.get(session['user_id'])
-    if not user:
-        return redirect(url_for('index'))
-        
     return render_template('dashboard.html', user=user)
 
 @app.route('/admin')
+@requires_auth
 def admin_panel():
     volunteers = Volunteer.query.all()
     total_points = sum(v.points for v in volunteers)
     return render_template('admin.html', volunteers=volunteers, total_points=total_points)
 
-# Выход из аккаунта
-@app.route('/logout')
-def logout():
-    session.pop('user_id', None)
-    flash('Вы вышли из системы.', 'info')
-    return redirect(url_for('index'))
 @app.route('/admin/update_points/<int:v_id>/<action>')
 @requires_auth
 def update_points(v_id, action):
     v = Volunteer.query.get_or_404(v_id)
-    if action == 'add':
-        v.points += 10
-    elif action == 'sub':
+    if action == 'add': v.points += 10
+    elif action == 'sub': 
         v.points -= 10
-        if v.points < 0: v.points = 0 # Чтобы баллы не ушли в минус
-    
+        if v.points < 0: v.points = 0
     db.session.commit()
     return redirect(url_for('admin_panel'))
+
 if __name__ == '__main__':
     app.run(debug=True)
