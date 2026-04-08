@@ -1,15 +1,270 @@
-<div class="form-grid">
-    <div>
-        <h2 style="font-size: 32px; margin-bottom: 20px;">Стань частью <br><span style="color: var(--primary)">большого дела</span></h2>
-        <p style="color: #888;">Заполни анкету волонтера. Мы свяжемся с тобой для участия в ближайших эко-акциях Ферганы.</p>
-        <div style="margin-top: 30px; padding: 15px; border-left: 2px solid var(--primary); background: rgba(0, 242, 254, 0.05); border-radius: 0 15px 15px 0;">
-            <p style="margin: 0; font-size: 14px; color: #eee; font-style: italic;">"Природа не наследуется нами у предков, а берется взаймы у наших детей."</p>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECO-UZB | {{ event.title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00f2fe; /* Яркий голубой */
+            --secondary: #4facfe; /* Насыщенный синий */
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон */
+        .bg-glow {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1a2a3a 0%, #050505 100%);
+            z-index: -1;
+        }
+
+        /* Навигация */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo { font-weight: 800; font-size: 20px; letter-spacing: 2px; color: var(--primary); }
+        .nav-links a {
+            color: white; text-decoration: none; margin-left: 30px;
+            font-size: 13px; font-weight: 500; text-transform: uppercase;
+            transition: 0.3s; opacity: 0.7;
+        }
+        .nav-links a:hover { opacity: 1; color: var(--primary); }
+
+        /* Hero Section */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .hero-badge {
+            background: var(--glass);
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .hero-sub {
+            max-width: 700px;
+            font-size: 18px;
+            color: #aaa;
+            margin: 30px 0;
+        }
+
+        /* Кнопки */
+        .btn {
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-main {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: #000;
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3);
+        }
+
+        .btn-main:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 242, 254, 0.5);
+        }
+
+        /* Карточка регистрации */
+        .container {
+            max-width: 1200px;
+            margin: -100px auto 100px;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 50px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        @media (max-width: 850px) { .form-grid { grid-template-columns: 1fr; } }
+
+        input, textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            padding: 18px;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 20px;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        input:focus { outline: none; border-color: var(--primary); background: rgba(255,255,255,0.1); }
+
+        /* Блог */
+        .blog-section { padding: 100px 0; text-align: center; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .blog-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 25px;
+            text-align: left;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blog-card:hover {
+            background: rgba(255,255,255,0.07);
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+
+        .blog-card h3 { color: var(--primary); margin-top: 0; }
+        .blog-card p { color: #ccc; font-size: 15px; }
+
+        footer {
+            padding: 100px 20px;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            color: #555;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <nav>
+        <div class="logo">ECO<span style="color:white">UZB</span></div>
+        <div class="nav-links">
+            <a href="/">Главная</a>
+            <a href="#blog">Новости</a>
+            <a href="/admin"><i class="fa-solid fa-user-shield"></i></a>
+        </div>
+    </nav>
+
+    <header>
+        <div class="hero-badge">Проект очистки страны</div>
+        <h1>{{ event.title }}</h1>
+        <p class="hero-sub">Мы не просто убираем мусор. Мы строим новую культуру отношения к нашей родине. Присоединяйся к числу тех, кто делом доказывает любовь к Узбекистану.</p>
+        <a href="#register" class="btn btn-main">Вступить в команду</a>
+    </header>
+
+    <div class="container" id="register">
+        <div class="glass-card">
+            <div class="form-grid">
+                <div>
+                    <h2 style="font-size: 32px; margin-bottom: 20px;">Стань частью <br><span style="color: var(--primary)">большого дела</span></h2>
+                    <p style="color: #888;">Заполни анкету волонтера. После регистрации мы свяжемся с тобой для уточнения деталей ближайшего мероприятия в Фергане.</p>
+                    
+                    <div style="margin-top: 30px; padding: 15px; border-left: 2px solid var(--primary); background: rgba(0, 242, 254, 0.05); border-radius: 0 15px 15px 0;">
+                        <p style="margin: 0; font-size: 14px; color: #eee; font-style: italic;">
+                            "Природа Узбекистана нуждается в нашей заботе. Начни свой путь эко-волонтера сегодня."
+                        </p>
+                    </div>
+                </div>
+                <form action="/register" method="POST">
+                    <input type="text" name="name" placeholder="Твое имя" required>
+                    <input type="tel" name="phone" placeholder="+998" required>
+                    <textarea name="motivation" placeholder="Твои цели или комментарий" rows="4"></textarea>
+                    <button type="submit" class="btn btn-main" style="width: 100%; border: none;">Отправить анкету</button>
+                </form>
+            </div>
         </div>
     </div>
-    <form action="/register" method="POST">
-        <input type="text" name="name" placeholder="Твое имя" required>
-        <input type="tel" name="phone" placeholder="+998" required>
-        <textarea name="motivation" placeholder="Твои цели или комментарий" rows="3"></textarea>
-        <button type="submit" class="btn btn-main" style="width: 100%; border: none;">Отправить анкету</button>
-    </form>
-</div>
+
+    <section class="blog-section" id="blog">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <h2 style="font-size: 45px; margin-bottom: 10px;">Эко-блог</h2>
+            <p style="color: #666;">Полезные статьи и отчеты с наших последних вылазок</p>
+            
+            <div class="grid">
+                {% for article in articles %}
+                <div class="blog-card">
+                    <div style="font-size: 10px; color: var(--primary); text-transform: uppercase; margin-bottom: 15px; letter-spacing: 2px;">
+                        <i class="fa-regular fa-calendar-check"></i> {{ article.date_added }}
+                    </div>
+                    <h3>{{ article.title }}</h3>
+                    <p>{{ article.content }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Проект очистки природы. Все права защищены. <br> Сделано с любовью к Фергане.</p>
+    </footer>
+
+</body>
+</html>
