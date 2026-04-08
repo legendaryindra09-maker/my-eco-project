@@ -9,7 +9,7 @@ app.secret_key = 'ultra_secret_key_for_eco_project'
 
 # --- НАСТРОЙКИ ДОСТУПА В АДМИНКУ ---
 ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = 'ТВОЙ_ПАРОЛЬ_ЗДЕСЬ' # <--- ИЗМЕНИ ЭТО!
+ADMIN_PASSWORD = 'sherdoraka' # <--- ИЗМЕНИ ЭТО!
 
 # Настройка базы данных
 db_url = os.getenv("DATABASE_URL")
