@@ -1,141 +1,104 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+import os
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import os
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'any-very-long-string-123')
+app.secret_key = 'ultra_secret_key_for_eco_project'
 
-# Умное подключение: если есть облачная база - берем ее, если нет - создаем локальную
-db_url = os.environ.get('DATABASE_URL', 'sqlite:///volunteers.db')
-if db_url.startswith("postgres://"):
+# Настройка базы данных
+db_url = os.getenv("DATABASE_URL")
+if db_url and db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url or 'sqlite:///eco_project.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+# --- МОДЕЛИ ДАННЫХ ---
 
 class Volunteer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), unique=True, nullable=False)
-    motivation = db.Column(db.String(300))
-    points = db.Column(db.Integer, default=10)
+    motivation = db.Column(db.String(500))
+    points = db.Column(db.Integer, default=10) # Начальные баллы за регистрацию
     is_blocked = db.Column(db.Boolean, default=False)
-    time_joined = db.Column(db.String(20))
+    time_joined = db.Column(db.String(20), default=lambda: datetime.now().strftime("%d.%m.%Y"))
+
+    def get_rank(self):
+        if self.points >= 100: return "Эко-Герой"
+        if self.points >= 50: return "Активист"
+        return "Новичок"
+
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
     date_added = db.Column(db.String(20), default=lambda: datetime.now().strftime("%d.%m.%Y"))
+
+# --- ИНФОРМАЦИЯ О ПРОЕКТЕ ---
+
+EVENT_INFO = {
+    "title": "Чистый Ферганский Парк",
+    "date": "20 мая 2026",
+    "location": "Центральный парк, Фергана",
+    "goal": "Собрать 2 тонны пластика"
+}
+
+# Создание таблиц
 with app.app_context():
     db.create_all()
 
-EVENT_INFO = {
-    "title": "Eco-volunteering: Event",
-    "date": "2026-05-20 10:00:00",
-    "location": "г. Фергана, Центральный парк ",
-    "description": "Присоединяйся к нам! За регистрацию даем 10 баллов, за участие — 50 баллов."
-}
+# --- МАРШРУТЫ ---
 
 @app.route('/')
 def index():
-    if 'user_id' in session:
-        return redirect(url_for('dashboard'))
-    
-    articles = Article.query.all()
+    articles = Article.query.order_by(Article.id.desc()).all()
+    # Авто-создание статьи, если пусто
     if not articles:
-        first = Article(
-            title="Чинары Ферганы: наше наследие",
-            content="Чинары дарят нам прохладу и чистый воздух. Давайте беречь природу нашего города!"
-        )
-        db.session.add(first)
+        new_art = Article(title="Старт проекта", content="Мы начинаем масштабную очистку Узбекистана!")
+        db.session.add(new_art)
         db.session.commit()
-        articles = [first]
-    
+        articles = [new_art]
     return render_template('index.html', event=EVENT_INFO, articles=articles)
 
 @app.route('/register', methods=['POST'])
 def register():
     name = request.form.get('name')
     phone = request.form.get('phone')
-    email = request.form.get('email')
-    
+    motivation = request.form.get('motivation')
+
     if not name or not phone:
-        flash('Имя и телефон обязательны!', 'error')
+        flash('Пожалуйста, укажите имя и телефон!', 'error')
         return redirect(url_for('index'))
 
     existing = Volunteer.query.filter_by(phone=phone).first()
     if existing:
-        flash('Этот номер уже зарегистрирован. Войдите ниже!', 'error')
+        flash('Этот номер уже зарегистрирован!', 'warning')
         return redirect(url_for('index'))
 
-    new_v = Volunteer(name=name, phone=phone, motivation=email, time_joined=datetime.now().strftime("%H:%M"))
+    new_v = Volunteer(name=name, phone=phone, motivation=motivation)
     db.session.add(new_v)
     db.session.commit()
     
     session['user_id'] = new_v.id
+    flash(f'Добро пожаловать в команду, {name}!', 'success')
     return redirect(url_for('dashboard'))
-
-@app.route('/login', methods=['POST'])
-def login():
-    phone = request.form.get('login_phone')
-    user = Volunteer.query.filter_by(phone=phone).first()
-    if user:
-        if user.is_blocked:
-            flash('Ваш аккаунт заблокирован администратором.', 'error')
-            return redirect(url_for('index'))
-        session['user_id'] = user.id
-        return redirect(url_for('dashboard'))
-    
-    flash('Номер не найден. Зарегистрируйтесь!', 'error')
-    return redirect(url_for('index'))
 
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('index'))
-    
     user = Volunteer.query.get(session['user_id'])
-    if not user or user.is_blocked:
-        session.pop('user_id', None)
-        return redirect(url_for('index'))
-    
-    # Берем топ-5 волонтеров для доски почета
-    top_volunteers = Volunteer.query.filter_by(is_blocked=False).order_by(Volunteer.points.desc()).limit(5).all()
-        
-    return render_template('dashboard.html', user=user, event=EVENT_INFO, top_volunteers=top_volunteers)
-
-@app.route('/logout')
-def logout():
-    session.pop('user_id', None)
-    return redirect(url_for('index'))
+    return f"<h1>Личный кабинет {user.name}</h1><p>Твой статус: {user.get_rank()}</p><a href='/'>На главную</a>"
 
 @app.route('/admin')
-def admin():
-    if request.args.get('key') != 'admin123':
-        return "Доступ запрещен! Введите правильный ключ в ссылку.", 403
-    all_volunteers = Volunteer.query.order_by(Volunteer.points.desc()).all()
-    return render_template('admin.html', volunteers=all_volunteers)
-
-@app.route('/admin/points/<int:v_id>/<int:amount>')
-def add_points(v_id, amount):
-    if request.args.get('key') != 'admin123': return "Доступ запрещен!", 403
-    v = Volunteer.query.get(v_id)
-    if v:
-        v.points += amount
-        db.session.commit()
-    return redirect(url_for('admin', key='admin123'))
-
-@app.route('/admin/block/<int:v_id>')
-def toggle_block(v_id):
-    if request.args.get('key') != 'admin123': return "Доступ запрещен!", 403
-    v = Volunteer.query.get(v_id)
-    if v:
-        v.is_blocked = not v.is_blocked
-        db.session.commit()
-    return redirect(url_for('admin', key='admin123'))
+def admin_panel():
+    # В будущем здесь нужна проверка пароля!
+    volunteers = Volunteer.query.all()
+    total_points = sum(v.points for v in volunteers)
+    return render_template('admin.html', volunteers=volunteers, total_points=total_points)
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
