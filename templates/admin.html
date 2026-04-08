@@ -2,41 +2,214 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Админ-панель | ECO-UZB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления | ECO-UZB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #0a0a0a; color: #eee; font-family: sans-serif; padding: 40px; }
-        table { width: 100%; border-collapse: collapse; background: #161616; border-radius: 15px; overflow: hidden; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #222; }
-        th { background: #00f2fe; color: black; text-transform: uppercase; font-size: 12px; }
-        .points-pill { background: #333; padding: 3px 10px; border-radius: 10px; color: #00f2fe; }
-        h1 { color: #00f2fe; }
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --danger: #ff4b2b;
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
+            padding: 40px 20px;
+            background: radial-gradient(circle at top left, #1a2a3a, #050505);
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .stats-top {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-badge {
+            background: var(--glass);
+            padding: 15px 25px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .stat-badge span { display: block; font-size: 24px; font-weight: 800; color: var(--primary); }
+        .stat-badge small { color: #888; text-transform: uppercase; font-size: 10px; }
+
+        /* Таблица */
+        .table-wrapper {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+        }
+
+        td {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 14px;
+        }
+
+        tr:last-child td { border: none; }
+
+        .v-name { font-weight: 800; color: #fff; }
+        .v-phone { color: #aaa; font-family: monospace; }
+        
+        .rank-label {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 800;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Кнопки управления баллами */
+        .points-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-point {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            font-weight: 800;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .btn-sub { 
+            color: var(--danger); 
+            background: rgba(255, 75, 43, 0.1); 
+            border-color: rgba(255, 75, 43, 0.2);
+        }
+
+        .btn-add { 
+            color: var(--primary); 
+            background: rgba(0, 242, 254, 0.1); 
+            border-color: rgba(0, 242, 254, 0.2);
+        }
+
+        .btn-point:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+        .points-val { font-weight: 800; min-width: 40px; text-align: center; font-size: 16px; }
+
+        .btn-home {
+            text-decoration: none;
+            color: #888;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn-home:hover { color: white; }
+
+        @media (max-width: 768px) {
+            .header-flex { flex-direction: column; gap: 20px; text-align: center; }
+            th:nth-child(4), td:nth-child(4) { display: none; } /* Скрываем дату на мобилках */
+        }
     </style>
 </head>
 <body>
-    <h1>Управление волонтерами</h1>
-    <p>Всего баллов в системе: <strong>{{ total_points }}</strong></p>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Имя</th>
-                <th>Телефон</th>
-                <th>Ранг</th>
-                <th>Баллы</th>
-                <th>Дата</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for v in volunteers %}
-            <tr>
-                <td>{{ v.name }}</td>
-                <td>{{ v.phone }}</td>
-                <td>{{ v.get_rank() }}</td>
-                <td><span class="points-pill">{{ v.points }}</span></td>
-                <td>{{ v.time_joined }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <div class="admin-container">
+        <div class="header-flex">
+            <div>
+                <a href="/" class="btn-home"><i class="fa-solid fa-arrow-left"></i> На главную</a>
+                <h1 style="margin: 10px 0 0;">Управление волонтерами</h1>
+            </div>
+            <div class="stats-top">
+                <div class="stat-badge">
+                    <span>{{ volunteers|length }}</span>
+                    <small>Человек</small>
+                </div>
+                <div class="stat-badge">
+                    <span>{{ total_points }}</span>
+                    <small>Всего баллов</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Имя</th>
+                        <th>Телефон / Мотивация</th>
+                        <th>Ранг</th>
+                        <th style="text-align: center;">Управление баллами</th>
+                        <th>Дата</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in volunteers %}
+                    <tr>
+                        <td>
+                            <div class="v-name">{{ v.name }}</div>
+                        </td>
+                        <td>
+                            <div class="v-phone">{{ v.phone }}</div>
+                            <div style="font-size: 11px; color: #555; margin-top: 5px;">{{ v.motivation if v.motivation else 'Без комментария' }}</div>
+                        </td>
+                        <td>
+                            <span class="rank-label" 
+                                  style="color: {% if v.points >= 100 %}#ffd700{% elif v.points >= 50 %}#00f2fe{% else %}#888{% endif %};
+                                         border: 1px solid {% if v.points >= 100 %}#ffd700{% elif v.points >= 50 %}#00f2fe{% else %}#333{% endif %};">
+                                {{ v.get_rank() }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="points-control">
+                                <a href="/admin/update_points/{{ v.id }}/sub" class="btn-point btn-sub" title="Отнять 10">-</a>
+                                <span class="points-val">{{ v.points }}</span>
+                                <a href="/admin/update_points/{{ v.id }}/add" class="btn-point btn-add" title="Добавить 10">+</a>
+                            </div>
+                        </td>
+                        <td style="color: #444; font-size: 12px;">{{ v.time_joined }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </body>
 </html>
