@@ -141,7 +141,25 @@
                 <small>Ранг в чате</small>
             </div>
         </div>
-
+<div class="leaderboard" style="margin-top: 25px; text-align: left;">
+            <h3 style="font-size: 18px; margin-bottom: 15px; color: var(--primary);">
+                <i class="fa-solid fa-trophy"></i> Топ волонтеров
+            </h3>
+            
+            <div style="background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--glass-border); overflow: hidden;">
+                {% for leader in leaders %}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); {% if leader.id == user.id %}background: rgba(0, 242, 254, 0.08);{% endif %}">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="color: #666; font-size: 12px; font-weight: 800; width: 20px;">{{ loop.index }}</span>
+                        <span style="font-size: 14px; color: {% if leader.id == user.id %}var(--primary){% else %}#fff{% endif %};">
+                            {{ leader.name }}
+                        </span>
+                    </div>
+                    <b style="color: var(--primary); font-size: 14px;">{{ leader.points }}</b>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
         <div class="knowledge-hub">
             <h3 style="font-size: 18px; margin-bottom: 20px;"><i class="fa-solid fa-earth-asia"></i> Эко-Просвещение</h3>
             
