@@ -115,6 +115,17 @@ def logout():
     session.pop('user_id', None)
     flash('Вы вышли из системы.', 'info')
     return redirect(url_for('index'))
-
+@app.route('/admin/update_points/<int:v_id>/<action>')
+@requires_auth
+def update_points(v_id, action):
+    v = Volunteer.query.get_or_404(v_id)
+    if action == 'add':
+        v.points += 10
+    elif action == 'sub':
+        v.points -= 10
+        if v.points < 0: v.points = 0 # Чтобы баллы не ушли в минус
+    
+    db.session.commit()
+    return redirect(url_for('admin_panel'))
 if __name__ == '__main__':
     app.run(debug=True)
