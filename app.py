@@ -7,21 +7,19 @@ from functools import wraps
 app = Flask(__name__)
 app.secret_key = 'ultra_secret_key_for_eco_project'
 
-# --- НАСТРОЙКИ ДОСТУПА В АДМИНКУ ---
+# --- НАСТРОЙКИ АДМИНКИ ---
 ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = '2009' # <--- ИЗМЕНИ ЭТО!
+ADMIN_PASSWORD = '123' 
 
-# Настройка базы данных
+# База данных
 db_url = os.getenv("DATABASE_URL")
 if db_url and db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url or 'sqlite:///eco_project.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # --- МОДЕЛИ ДАННЫХ ---
-
 class Volunteer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -38,16 +36,17 @@ class Volunteer(db.Model):
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
+    summary = db.Column(db.String(300), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    image_url = db.Column(db.String(500), nullable=False)
     date_added = db.Column(db.String(20), default=lambda: datetime.now().strftime("%d.%m.%Y"))
 
-# --- ЗАЩИТА АДМИНКИ ---
-
+# --- АВТОРИЗАЦИЯ ---
 def check_auth(username, password):
     return username == ADMIN_USERNAME and password == ADMIN_PASSWORD
 
 def authenticate():
-    return Response('Нужна авторизация', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
+    return Response('Нужен вход', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 def requires_auth(f):
     @wraps(f)
@@ -65,25 +64,21 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    articles = Article.query.order_by(Article.id.desc()).all()
-    event = {"title": "Чистый Ферганский Парк"}
-    return render_template('index.html', event=event, articles=articles)
+    if 'user_id' in session:
+        user = Volunteer.query.get(session['user_id'])
+        articles = Article.query.order_by(Article.id.desc()).all()
+        return render_template('home_member.html', user=user, articles=articles)
+    return render_template('index.html')
 
 @app.route('/register', methods=['POST'])
 def register():
     name = request.form.get('name')
     phone = request.form.get('phone')
     motivation = request.form.get('motivation')
-
-    if not name or not phone:
-        flash('Укажите имя и телефон!', 'error')
-        return redirect(url_for('index'))
-
     existing = Volunteer.query.filter_by(phone=phone).first()
     if existing:
         session['user_id'] = existing.id
         return redirect(url_for('dashboard'))
-
     new_v = Volunteer(name=name, phone=phone, motivation=motivation)
     db.session.add(new_v)
     db.session.commit()
@@ -91,35 +86,27 @@ def register():
     return redirect(url_for('dashboard'))
 
 @app.route('/dashboard')
-@app.route('/dashboard')
 def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('index'))
-    
+    if 'user_id' not in session: return redirect(url_for('index'))
     user = Volunteer.query.get(session['user_id'])
-    
-    # Добавляем эту строку — она берет топ-5 лидеров по баллам
     leaders = Volunteer.query.order_by(Volunteer.points.desc()).limit(5).all()
-    
-    # В этой строке мы добавляем leaders=leaders в самый конец
     return render_template('dashboard.html', user=user, leaders=leaders)
+
+@app.route('/article/<int:article_id>')
+def view_article(article_id):
+    article = Article.query.get_or_404(article_id)
+    return render_template('article_detail.html', article=article)
+
 @app.route('/admin')
 @requires_auth
 def admin_panel():
     volunteers = Volunteer.query.all()
-    total_points = sum(v.points for v in volunteers)
-    return render_template('admin.html', volunteers=volunteers, total_points=total_points)
+    return render_template('admin.html', volunteers=volunteers)
 
-@app.route('/admin/update_points/<int:v_id>/<action>')
-@requires_auth
-def update_points(v_id, action):
-    v = Volunteer.query.get_or_404(v_id)
-    if action == 'add': v.points += 10
-    elif action == 'sub': 
-        v.points -= 10
-        if v.points < 0: v.points = 0
-    db.session.commit()
-    return redirect(url_for('admin_panel'))
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
