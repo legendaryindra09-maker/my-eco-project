@@ -2,185 +2,52 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой Профиль | ECO-UZB</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #00f2fe;
-            --secondary: #4facfe;
-            --bg-dark: #050505;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-dark);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: radial-gradient(circle at top right, #1a2a3a, #050505);
-            padding: 20px;
-        }
-
-        .dashboard-container {
-            width: 100%;
-            max-width: 600px;
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        }
-
-        .avatar-circle {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 32px;
-            font-weight: 800;
-            color: #000;
-        }
-
-        .rank-badge {
-            background: rgba(0, 242, 254, 0.1);
-            color: var(--primary);
-            padding: 5px 15px;
-            border-radius: 50px;
-            font-size: 11px;
-            text-transform: uppercase;
-            border: 1px solid var(--primary);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 25px 0;
-        }
-
-        .stat-card {
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .stat-card span { display: block; font-size: 22px; font-weight: 800; color: var(--primary); }
-        .stat-card small { color: #666; font-size: 10px; text-transform: uppercase; }
-
-        /* База знаний */
-        .knowledge-hub {
-            text-align: left;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--glass-border);
-        }
-
-        .info-card {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .info-card i { color: var(--primary); margin-right: 10px; }
-        .info-card b { display: block; margin-bottom: 8px; font-size: 15px; color: #fff; }
-        .info-card p { margin: 0; font-size: 13px; color: #aaa; line-height: 1.5; }
-
-        .fact-box {
-            background: rgba(0, 242, 254, 0.05);
-            border: 1px solid var(--primary);
-            padding: 15px;
-            border-radius: 15px;
-            font-size: 13px;
-        }
-
-        .btn-back {
-            display: inline-block;
-            margin-top: 25px;
-            color: #555;
-            text-decoration: none;
-            font-size: 13px;
-            transition: 0.3s;
-        }
+        :root { --primary: #00f2fe; --secondary: #4facfe; --bg-dark: #050505; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .dashboard-container { width: 100%; max-width: 600px; background: var(--glass); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 40px; padding: 40px; text-align: center; }
+        .avatar { width: 80px; height: 80px; background: linear-gradient(45deg, var(--primary), var(--secondary)); border-radius: 50%; margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: 800; color: #000; }
+        .rank-badge { background: rgba(0, 242, 254, 0.1); color: var(--primary); padding: 5px 15px; border-radius: 50px; font-size: 12px; text-transform: uppercase; border: 1px solid var(--primary); }
+        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin: 30px 0; }
+        .stat-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); }
+        .stat-card span { display: block; font-size: 32px; font-weight: 800; color: var(--primary); }
+        
+        .leaderboard { text-align: left; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; margin-top: 30px; border: 1px solid var(--glass-border); }
+        .leader-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .leader-item:last-child { border: none; }
+        
+        .btn-back { display: inline-block; margin-top: 20px; color: #888; text-decoration: none; transition: 0.3s; }
         .btn-back:hover { color: white; }
     </style>
 </head>
 <body>
-
     <div class="dashboard-container">
-        <div class="avatar-circle">
-            {{ user.name[0].upper() }}
-        </div>
-        
+        <div class="avatar">{{ user.name[0].upper() }}</div>
         <span class="rank-badge">{{ user.get_rank() }}</span>
-        <h2 style="margin: 10px 0 5px;">{{ user.name }}</h2>
-        <div style="color: #555; font-size: 12px;">В команде с {{ user.time_joined }}</div>
+        <h2 style="margin: 15px 0 5px;">{{ user.name }}</h2>
+        <div style="color: #666; font-size: 14px;">В команде с {{ user.time_joined }}</div>
 
         <div class="stats-grid">
             <div class="stat-card">
                 <span>{{ user.points }}</span>
-                <small>Твои Баллы</small>
-            </div>
-            <div class="stat-card">
-                <span>1</span>
-                <small>Ранг в чате</small>
-            </div>
-        </div>
-<div class="leaderboard" style="margin-top: 25px; text-align: left;">
-            <h3 style="font-size: 18px; margin-bottom: 15px; color: var(--primary);">
-                <i class="fa-solid fa-trophy"></i> Топ волонтеров
-            </h3>
-            
-            <div style="background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--glass-border); overflow: hidden;">
-                {% for leader in leaders %}
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); {% if leader.id == user.id %}background: rgba(0, 242, 254, 0.08);{% endif %}">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="color: #666; font-size: 12px; font-weight: 800; width: 20px;">{{ loop.index }}</span>
-                        <span style="font-size: 14px; color: {% if leader.id == user.id %}var(--primary){% else %}#fff{% endif %};">
-                            {{ leader.name }}
-                        </span>
-                    </div>
-                    <b style="color: var(--primary); font-size: 14px;">{{ leader.points }}</b>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="knowledge-hub">
-            <h3 style="font-size: 18px; margin-bottom: 20px;"><i class="fa-solid fa-earth-asia"></i> Эко-Просвещение</h3>
-            
-            <div class="info-card">
-                <b><i class="fa-solid fa-trash-can"></i> Проблема отходов</b>
-                <p>Пластиковая бутылка разлагается до 450 лет. В Узбекистане ежедневно выбрасываются тонны пластика, который отравляет почву на десятилетия.</p>
-            </div>
-
-            <div class="info-card">
-                <b><i class="fa-solid fa-droplet"></i> Чистая вода</b>
-                <p>Загрязнение рек удобрениями и мусором лишает нас питьевой воды. Каждый волонтер, убравший берег, спасает экосистему региона.</p>
-            </div>
-
-            <div class="fact-box">
-                <b style="color: var(--primary);">📊 Знаете ли вы?</b><br>
-                Сортировка всего 1 тонны макулатуры спасает 17 деревьев и экономит 26 000 литров воды.
+                <small style="color:#aaa; text-transform:uppercase; letter-spacing:1px;">Твои эко-баллы</small>
             </div>
         </div>
 
-        <a href="/" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Вернуться на главную</a>
+        <div class="leaderboard">
+            <h3 style="margin-top:0; font-size:16px; color:var(--primary);"><i class="fa-solid fa-trophy"></i> Топ волонтеров</h3>
+            {% for leader in leaders %}
+            <div class="leader-item">
+                <span style="color: #ccc;">{{ loop.index }}. {{ leader.name }}</span>
+                <span style="color: var(--primary); font-weight: bold;">{{ leader.points }} б.</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <a href="/" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Вернуться к новостям</a>
     </div>
-
 </body>
 </html>
