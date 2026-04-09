@@ -119,7 +119,7 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    @app.route('/admin')
+@app.route('/admin')
 def admin_panel():
     # Проверяем секретный ключ в ссылке (?key=admin123)
     key = request.args.get('key')
