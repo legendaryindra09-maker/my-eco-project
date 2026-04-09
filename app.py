@@ -119,4 +119,30 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    @app.route('/admin')
+def admin_panel():
+    # Проверяем секретный ключ в ссылке (?key=admin123)
+    key = request.args.get('key')
+    if key != 'admin123':
+        return "Доступ закрыт. Неверный ключ или ключ не указан.", 403
+    
+    # Собираем данные для админ-панели (как было в твоем старом коде)
+    volunteers = Volunteer.query.order_by(Volunteer.points.desc()).all()
+    total_points = sum(v.points for v in volunteers) if volunteers else 0
+    
+    return render_template('admin.html', volunteers=volunteers, total_points=total_points)
+
+@app.route('/add_points/<int:user_id>', methods=['POST'])
+def add_points(user_id):
+    # Эта функция нужна, чтобы ты мог начислять баллы из админки (если у тебя есть такая кнопка)
+    key = request.args.get('key')
+    if key != 'admin123':
+        return "Доступ закрыт", 403
+        
+    user = Volunteer.query.get_or_404(user_id)
+    points_to_add = int(request.form.get('points', 0))
+    user.points += points_to_add
+    db.session.commit()
+    
+    return redirect(url_for('admin_panel', key='admin123'))
     app.run(debug=True)
