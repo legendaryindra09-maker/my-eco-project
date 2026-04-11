@@ -118,7 +118,6 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('index'))
 
-if __name__ == '__main__':
     # --- АДМИН-ПАНЕЛЬ ---
 @app.route('/admin')
 def admin_panel():
@@ -144,4 +143,5 @@ def add_points(user_id):
     db.session.commit()
     
     return redirect(url_for('admin_panel', key='admin123'))
+    if __name__ == '__main__':
     app.run(debug=True)
