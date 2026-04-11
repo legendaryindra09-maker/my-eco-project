@@ -119,4 +119,29 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    # --- АДМИН-ПАНЕЛЬ ---
+@app.route('/admin')
+def admin_panel():
+    key = request.args.get('key')
+    if key != 'admin123':
+        return "Доступ закрыт", 403
+    
+    # Загружаем всех волонтеров, чтобы ты мог дать им баллы
+    volunteers = Volunteer.query.order_by(Volunteer.points.desc()).all()
+    total_points = sum(v.points for v in volunteers) if volunteers else 0
+    
+    return render_template('admin.html', volunteers=volunteers, total_points=total_points)
+
+@app.route('/add_points/<int:user_id>', methods=['POST'])
+def add_points(user_id):
+    key = request.args.get('key')
+    if key != 'admin123':
+        return "Доступ закрыт", 403
+        
+    user = Volunteer.query.get_or_404(user_id)
+    points_to_add = int(request.form.get('points', 0))
+    user.points += points_to_add
+    db.session.commit()
+    
+    return redirect(url_for('admin_panel', key='admin123'))
     app.run(debug=True)
