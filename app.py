@@ -143,5 +143,5 @@ def add_points(user_id):
     db.session.commit()
     
     return redirect(url_for('admin_panel', key='admin123'))
-    if __name__ == '__main__':
+    'if' __name__ == '__main__':
     app.run(debug=True)
