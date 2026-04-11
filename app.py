@@ -117,15 +117,13 @@ def view_article(article_id):
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('index'))
-
-    # --- АДМИН-ПАНЕЛЬ ---
+# --- АДМИН-ПАНЕЛЬ ---
 @app.route('/admin')
 def admin_panel():
     key = request.args.get('key')
     if key != 'admin123':
         return "Доступ закрыт", 403
     
-    # Загружаем всех волонтеров, чтобы ты мог дать им баллы
     volunteers = Volunteer.query.order_by(Volunteer.points.desc()).all()
     total_points = sum(v.points for v in volunteers) if volunteers else 0
     
@@ -139,9 +137,10 @@ def add_points(user_id):
         
     user = Volunteer.query.get_or_404(user_id)
     points_to_add = int(request.form.get('points', 0))
-    user.points += points_to_add
+    user.user_points += points_to_add # Убедись, что поле в базе называется user.points или user.user_points
     db.session.commit()
     
     return redirect(url_for('admin_panel', key='admin123'))
-    'if' __name__ == '__main__':
+
+if __name__ == '__main__':
     app.run(debug=True)
